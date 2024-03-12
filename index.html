@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="计算巢是阿里云开放给企业应用服务商的服务管理平台。服务商能够在计算巢上发布私有化部署服务，为其客户提供云上软件一键部署的能力；同时也支持全托管模式的服务，赋能服务商托管其客户资源。">
+  <title>Gitlab 社区版计算巢快速部署 - Aliyun 计算巢 x Demo</title>
+
+  <link rel="shortcut icon" href="img/favicon.ico">
+
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css">
+  <link rel="stylesheet" href="css/theme.css">
+  
+
+  
+
+  
+  
+
+  
+    <script src="search/main.js"></script>
+  
+
+  
+
+  <script src="js/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="nav">
+      <div class="nav-inner">
+        <div class="logo">
+          <img src="./img/logo-2x.png">
+        </div>
+        <div class="nav-list">
+          <ul>
+          
+              <li><a href="#gitlab">Gitlab 社区版计算巢快速部署</a></li>
+              
+                  <li><a href="#_1">概述</a></li>
+                  
+              
+                  <li><a href="#_2">计费说明</a></li>
+                  
+              
+                  <li><a href="#_3">部署架构</a></li>
+                  
+              
+                  <li><a href="#_4">参数说明</a></li>
+                  
+              
+                  <li><a href="#ram">RAM账号所需权限</a></li>
+                  
+              
+                  <li><a href="#_5">部署流程</a></li>
+                  
+              
+                  <li><a href="#git">Git安装并配置</a></li>
+                  
+              
+                  <li><a href="#_6">创建项目</a></li>
+                  
+              
+                  <li><a href="#gitlab_1">使用gitlab</a></li>
+                  
+              
+                  <li><a href="#_7">参考文档</a></li>
+                  
+              
+          
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="content theme-github">
+      
+      <div class="content-inner">        
+        
+        <h1 id="gitlab">Gitlab 社区版计算巢快速部署</h1>
+<blockquote>
+<p><strong>免责声明：</strong>本服务由第三方提供，我们尽力确保其安全性、准确性和可靠性，但无法保证其完全免于故障、中断、错误或攻击。因此，本公司在此声明：对于本服务的内容、准确性、完整性、可靠性、适用性以及及时性不作任何陈述、保证或承诺，不对您使用本服务所产生的任何直接或间接的损失或损害承担任何责任；对于您通过本服务访问的第三方网站、应用程序、产品和服务，不对其内容、准确性、完整性、可靠性、适用性以及及时性承担任何责任，您应自行承担使用后果产生的风险和责任；对于因您使用本服务而产生的任何损失、损害，包括但不限于直接损失、间接损失、利润损失、商誉损失、数据损失或其他经济损失，不承担任何责任，即使本公司事先已被告知可能存在此类损失或损害的可能性；我们保留不时修改本声明的权利，因此请您在使用本服务前定期检查本声明。如果您对本声明或本服务存在任何问题或疑问，请联系我们。</p>
+</blockquote>
+<h2 id="_1">概述</h2>
+<p>Gitlab是一个开源的Git代码仓库系统，可以实现自托管的，即用于构建私有的代码托管平台和项目管理系统。系统基于Ruby on Rails开发，速度快、安全稳定。它拥有与Github类似的功能，能够浏览源代码，管理缺陷和注释。可以管理团队对仓库的访问，它非常易于浏览提交过的版本并提供一个文件历史库。团队成员可以利用内置的简单聊天程序(Wall)进行交流。它还提供一个代码片段收集功能可以轻松实现代码复用，便于日后有需要的时候进行查找。</p>
+<h2 id="_2">计费说明</h2>
+<p>Gitlab 社区版上的费用主要涉及：</p>
+<ul>
+<li>所选vCPU与内存规格</li>
+<li>系统盘类型及容量</li>
+<li>公网带宽</li>
+</ul>
+<h2 id="_3">部署架构</h2>
+<p><img src="1.png" width="1500" height="700" align="bottom"/></p>
+<h2 id="_4">参数说明</h2>
+<table>
+<thead>
+<tr>
+<th>参数组</th>
+<th>参数项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>服务实例</td>
+<td>服务实例名称</td>
+<td>长度不超过64个字符，必须以英文字母开头，可包含数字、英文字母、短划线（-）和下划线（_）</td>
+</tr>
+<tr>
+<td></td>
+<td>地域</td>
+<td>服务实例部署的地域</td>
+</tr>
+<tr>
+<td></td>
+<td>付费类型</td>
+<td>资源的计费类型：按量付费和包年包月</td>
+</tr>
+<tr>
+<td>ECS实例配置</td>
+<td>实例类型</td>
+<td>可用区下可以使用的实例规格</td>
+</tr>
+<tr>
+<td></td>
+<td>实例密码</td>
+<td>长度8-30，必须包含三项（大写字母、小写字母、数字、 ()`~!@#$%^&amp;*-+=&#124;{}[]:;'&lt;&gt;,.?/ 中的特殊符号）</td>
+</tr>
+<tr>
+<td>网络配置</td>
+<td>可用区</td>
+<td>ECS实例所在可用区</td>
+</tr>
+<tr>
+<td></td>
+<td>VPC ID</td>
+<td>资源所在VPC</td>
+</tr>
+<tr>
+<td></td>
+<td>交换机ID</td>
+<td>资源所在交换机</td>
+</tr>
+<tr>
+<td>gitlab账号配置</td>
+<td>gitlab管理员密码</td>
+<td>gitlab管理员密码配置</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ram">RAM账号所需权限</h2>
+<p>部署Gitlab 社区版，需要对部分阿里云资源进行访问和创建操作。因此您的账号需要包含如下资源的权限。
+  <strong>说明</strong>：当您的账号是RAM账号时，才需要添加此权限。</p>
+<table>
+<thead>
+<tr>
+<th>权限策略名称</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AliyunECSFullAccess</td>
+<td>管理云服务器服务（ECS）的权限</td>
+</tr>
+<tr>
+<td>AliyunVPCFullAccess</td>
+<td>管理专有网络（VPC）的权限</td>
+</tr>
+<tr>
+<td>AliyunROSFullAccess</td>
+<td>管理资源编排服务（ROS）的权限</td>
+</tr>
+<tr>
+<td>AliyunComputeNestUserFullAccess</td>
+<td>管理计算巢服务（ComputeNest）的用户侧权限</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">部署流程</h2>
+<p>1.访问Gitlab 社区版服务<a href="https://computenest.console.aliyun.com/service/instance/create/cn-hangzhou?type=user&amp;ServiceId=service-c6be5c5106944ed2b738&amp;ServiceVersion=6">部署链接</a>
+，按提示填写部署参数：</p>
+<p><img alt="image.png" src="2.png" /></p>
+<p>2.参数填写完成后可以看到对应询价明细，确认参数后点击<strong>下一步：确认订单</strong>。</p>
+<p><img alt="image.png" src="3.png" /></p>
+<p>3.确认订单完成后同意服务协议并点击<strong>立即创建</strong>进入部署阶段。</p>
+<p><img alt="image.png" src="4.png" /></p>
+<p>4.等待部署完成后进入服务实例管理。</p>
+<p>5.在控制台找到GitLab服务链接并访问。</p>
+<p><img alt="image.png" src="5.png" /></p>
+<p>6.输入配置的管理员邮箱和密码即可登录gitlab后台管理页面。</p>
+<p><img alt="image.png" src="6.png" />
+<img alt="image.png" src="7.png" /></p>
+<h2 id="git">Git安装并配置</h2>
+<p>1.安装Git工具。</p>
+<blockquote>
+<p>sudo yum install git -y</p>
+</blockquote>
+<p>2.生成密钥对文件id_rsa。</p>
+<blockquote>
+<p>ssh-keygen</p>
+</blockquote>
+<p>生成密钥对的过程中，系统会提示输入密钥对存放目录（默认为当前用户目录下的.ssh/id_rsa，例如/root/.ssh/id_rsa）和密钥对密码，您可以手动输入，也可以按Enter保持默认。 回显信息类似如下所示。</p>
+<p><img alt="image.png" src="9.png" /></p>
+<p>3.查看并复制公钥文件id_rsa.pub中的内容。</p>
+<blockquote>
+<p>cat .ssh/id_rsa.pub</p>
+</blockquote>
+<p><img alt="image.png" src="10.png" /></p>
+<p>4.在gitlab页面中，单击Add SSH key，将公钥文件id_rsa.pub中的内容粘贴到Key所在的文本框中。</p>
+<p><img alt="image.png" src="11.png" />
+<img alt="image.png" src="12.png" /></p>
+<p>5.单击Add key，SSH Key添加完成后，如图所示。</p>
+<p><img alt="image.png" src="13.png" /></p>
+<h2 id="_6">创建项目</h2>
+<p>1.在GitLab的主页中，单击Create a project。</p>
+<p><img alt="image.png" src="14.png" /></p>
+<p>2.单击Create blank project，设置Project name和Project URL，然后单击Create project。本文以mywork项目为例进行说明。</p>
+<p><img alt="image.png" src="15.png" /></p>
+<h2 id="gitlab_1">使用gitlab</h2>
+<p>1.配置使用Git仓库的人员姓名和邮箱。</p>
+<blockquote>
+<p>git config --global user.name "testname" </p>
+<p>git config --global user.email "abc@example.com" </p>
+</blockquote>
+<p>2.克隆已创建的项目到本地。</p>
+<p><img alt="image.png" src="16.png" /></p>
+<p><img alt="image.png" src="17.png" /></p>
+<p>3.进入到项目目录。</p>
+<blockquote>
+<p>cd mywork/ </p>
+</blockquote>
+<p>4.创建test.sh文件并增加内容‘gitlab-ce_test’。</p>
+<blockquote>
+<p>vim test.sh</p>
+</blockquote>
+<p>5.将test.sh文件加入到索引中。</p>
+<blockquote>
+<p>git add test.sh</p>
+</blockquote>
+<p>6.将test.sh提交到本地仓库。</p>
+<blockquote>
+<p>git commit -m "test.sh"</p>
+</blockquote>
+<p>7.将文件同步到GitLab服务器上。</p>
+<blockquote>
+<p>git push -u origin main</p>
+</blockquote>
+<p><img alt="image.png" src="18.png" /></p>
+<p>8.在网页中查看上传的test.sh文件已经同步到GitLab服务器中。</p>
+<p><img alt="image.png" src="19.png" /></p>
+<h2 id="_7">参考文档</h2>
+<p>https://help.aliyun.com/zh/ecs/use-cases/deploy-and-use-gitlab#2578472088odq</p>
+        
+      </div>
+
+      <div class="copyrights">© 2009-2022 Aliyun.com 版权所有</div>
+    </div>
+  </div>
+  
+  <!--
+  MkDocs version      : 1.5.3
+  Docs Build Date UTC : 2024-03-12 05:42:41.622950+00:00
+  -->
+</body>
+</html>
