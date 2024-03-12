@@ -30,8 +30,7 @@ Gitlab 社区版上的费用主要涉及：
 | 网络配置       | 可用区         | ECS实例所在可用区                                                             |
 |            | VPC ID      | 资源所在VPC                                                                |
 |            | 交换机ID       | 资源所在交换机                                                                |
-| gitlab账号配置 | gitlab管理员邮箱 | gitlab管理员邮箱配置                                                          |
-|            | gitlab管理员密码 | gitlab管理员密码配置                                                          |
+| gitlab账号配置 | gitlab管理员密码 | gitlab管理员密码配置                                                          |
 
 ## RAM账号所需权限
 
@@ -47,7 +46,7 @@ Gitlab 社区版上的费用主要涉及：
 
 ## 部署流程
 
-1.访问Gitlab 社区版服务[部署链接](https://computenest.console.aliyun.com/service/instance/create/cn-hangzhou?type=user&ServiceId=service-c6be5c5106944ed2b738)
+1.访问Gitlab 社区版服务[部署链接](https://computenest.console.aliyun.com/service/instance/create/cn-hangzhou?type=user&ServiceId=service-c6be5c5106944ed2b738&ServiceVersion=6)
 ，按提示填写部署参数：
 
 ![image.png](2.png)
@@ -70,3 +69,86 @@ Gitlab 社区版上的费用主要涉及：
 
 ![image.png](6.png)
 ![image.png](7.png)
+
+## Git安装并配置
+
+1.安装Git工具。
+
+> sudo yum install git -y
+
+2.生成密钥对文件id_rsa。
+
+> ssh-keygen
+
+生成密钥对的过程中，系统会提示输入密钥对存放目录（默认为当前用户目录下的.ssh/id_rsa，例如/root/.ssh/id_rsa）和密钥对密码，您可以手动输入，也可以按Enter保持默认。 回显信息类似如下所示。
+
+![image.png](9.png)
+
+3.查看并复制公钥文件id_rsa.pub中的内容。
+
+> cat .ssh/id_rsa.pub
+
+![image.png](10.png)
+
+4.在gitlab页面中，单击Add SSH key，将公钥文件id_rsa.pub中的内容粘贴到Key所在的文本框中。
+
+![image.png](11.png)
+![image.png](12.png)
+
+5.单击Add key，SSH Key添加完成后，如图所示。
+
+![image.png](13.png)
+
+## 创建项目
+
+1.在GitLab的主页中，单击Create a project。
+
+![image.png](14.png)
+
+2.单击Create blank project，设置Project name和Project URL，然后单击Create project。本文以mywork项目为例进行说明。
+
+![image.png](15.png)
+
+## 使用gitlab
+
+1.配置使用Git仓库的人员姓名和邮箱。
+
+> git config --global user.name "testname" 
+> 
+> git config --global user.email "abc@example.com" 
+
+2.克隆已创建的项目到本地。
+
+![image.png](16.png)
+
+![image.png](17.png)
+
+3.进入到项目目录。
+
+> cd mywork/ 
+
+4.创建test.sh文件并增加内容‘gitlab-ce_test’。
+
+> vim test.sh
+
+5.将test.sh文件加入到索引中。
+
+> git add test.sh
+
+6.将test.sh提交到本地仓库。
+
+> git commit -m "test.sh"
+
+7.将文件同步到GitLab服务器上。
+
+> git push -u origin main
+
+![image.png](18.png)
+
+8.在网页中查看上传的test.sh文件已经同步到GitLab服务器中。
+
+![image.png](19.png)
+
+## 参考文档
+
+https://help.aliyun.com/zh/ecs/use-cases/deploy-and-use-gitlab#2578472088odq
